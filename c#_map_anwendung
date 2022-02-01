@@ -1,0 +1,143 @@
+@{
+  ViewData["Title"] = "Home Page";
+}
+
+<style>
+  #map {
+    height: 80vh;
+  }
+
+  tr {
+    cursor: pointer;
+  }
+
+  #table-wrapper {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+
+<div class="row">
+  <div class="col-sm-7">
+    <div id="map"></div>
+      <script>  
+        function initMap() {
+        var locations = [
+            ['Bondi Beach', -33.890542, 151.274856, 4],
+            ['Coogee Beach', -33.923036, 151.259052, 5],
+            ['Cronulla Beach', -34.028249, 151.157507, 3],
+            ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+            ['Maroubra BeachManly Beach Manly Beach Manly Beach', -33.950198, 151.259302, 1]
+        ];
+
+        var count, marker;
+
+        // Init map
+        var mapOptions = {
+            zoom: 13,
+            center: new google.maps.LatLng(locations[0][1], locations[0][2]),
+            scrollwheel: true,
+        };
+
+        var map = new google.maps.Map(document.getElementById("myTable"), mapOptions);
+
+        // Create info window
+        var infowindow = new google.maps.InfoWindow({
+            maxWidth: 350,
+            pixelOffset: new google.maps.Size(-10,-25)
+        });
+        
+        // Access the locations array in initMap to fire an info window
+        var infoLocationFn = function (count) {
+            return function (e) {
+                
+                //pull c# values (posMsgs.cs) to use in JS
+                $.ajax({
+                    url: '/Users/mamikawamura/PosMsgs.cs',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        var content = '<div>' +
+                    '<span> GPS: ' + locations[count][0] + '</span>' +
+                    '<span>,  Unit: ' + locations[count][1] + '</span>' +
+                    '<span>, Milage: ' + locations[count][2] + '</span>' +
+                    '</div>';
+                    },
+                    error: function (error) {.
+                        alert("Fehler eingetreten!")
+                    }
+                }
+
+                infowindow.setContent(content);
+                infowindow.open(map);
+                infowindow.setPosition(new google.maps.LatLng(locations[count][1], locations[count][2]));
+            }
+        };
+
+        // Add markers
+        for (count = 0; count < locations.length; count++) {
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(locations[count][1], locations[count][2]),
+                map: map,
+                title: locations[count][0]
+            });
+            marker.setMap(map);
+
+            let fn = infoLocationFn(count);
+            google.maps.event.addListener(marker, 'click', fn);
+        
+        //add zoom funcitons
+            google.maps.addListener("center", () => {
+              window.setTimeout(() => {
+                google.map.panTo(marker.getPosition());
+              }, 3000);
+            });
+            marker.addListner("click", () => {
+              google.map.setZoom(8);
+              google.map.setCenter(marker.getPosition());
+            })
+        }
+    } 
+    </script>  
+    <script src="https://maps.googleapis.com/maps/api/js?key=put_your_api_key_here&callback=initMap"></script>
+  </div>
+  <div id="table-wrapper" class="col-sm w-100">
+    <table id="myTable" class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Unit</th>
+          <th scope="col">Gps Timestamp</th>
+          <th scope="col">Milage</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+
+@section Scripts {
+<script>
+  (async () => {
+    //display one row in the table for each position message in posMsgs.cs
+    let posMsgs = await $.get("posMsgs.cs");
+      var table = document.getElementById("myTable");
+      var rows = table.getElementsByTagName("tr");
+      for (i = 0; i < rows.length; i++) {
+        var currentRow = table.rows[i];
+        var addClickHandler = function(row) {
+          return function() {
+            var cell = row.getElementsByTagName("td")[0];
+            var id = cell.innerHTML;
+            alert("id:" + id);
+          };
+        };
+        currentRow.onclick = addClickHandler(currentRow);
+  }
+      }
+  })();
+</script>
+}
