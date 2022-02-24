@@ -5,7 +5,7 @@ namespace WinFormsApp1
         private DateTime targetDT;
         public NumericUpDown numericUpDownMn { get; set; }
         public NumericUpDown numericUpDownSn { get; set; }
-        public NumericUpDown numericUpdownMiliSn { get; set; }
+        public NumericUpDown numericUpdownHn { get; set; }
         public Form1()
         {
             InitializeComponent();
@@ -28,7 +28,7 @@ namespace WinFormsApp1
 
                 numericUpDownSn.Enabled = false;
 
-                numericUpdownMiliSn.Enabled = false;
+                numericUpdownHn.Enabled = false;
 
                 targetDT = DateTime.Now.Add(ts);
 
@@ -49,7 +49,7 @@ namespace WinFormsApp1
                 Timer.Start();
                 numericUpDownMn.Value = ts.Minutes;
                 numericUpDownSn.Value = ts.Seconds;
-                numericUpdownMiliSn.Value = ts.Milliseconds;
+                numericUpdownHn.Value = ts.Milliseconds;
                 txtHrs.Text = ts.Minutes.ToString();
                 txtMins.Text = ts.Seconds.ToString();
                 txtSecs.Text = ts.Milliseconds.ToString();
@@ -60,11 +60,11 @@ namespace WinFormsApp1
                 Timer.Stop();
                 numericUpDownMn.Value = 0;
                 numericUpDownSn.Value = 0;
-                numericUpdownMiliSn.Value = 0;
+                numericUpdownHn.Value = 0;
                 StartBtn.Enabled = true;
                 numericUpDownMn.Enabled = true;
                 numericUpDownSn.Enabled = true;
-                numericUpdownMiliSn.Enabled = true;
+                numericUpdownHn.Enabled = true;
 
             }
 
