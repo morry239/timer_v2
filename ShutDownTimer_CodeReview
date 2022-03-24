@@ -1,0 +1,272 @@
+using System.Diagnostics;
+using System.Media;
+using static System.Media.SoundPlayer;
+
+namespace WinFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        int numTicks = 0;
+        int ticksElapsed = 0;
+        int ticksRemaining = 0;
+        private const int timerEnds = 0;
+
+
+        public static void Main()
+        {
+            Application.Run(new Form1());
+        }
+
+        public Form1()
+        {
+            InitializeComponent();
+
+        }
+
+        private void PauseBtn_Click(object sender, EventArgs e)
+        {
+            if(Timer.Enabled)
+            {
+                Timer.Stop();
+                PauseBtn.Text = "Resume";
+            }
+            else
+            {
+                PauseBtn.Text = "Pause";
+                Timer.Start();
+
+            }
+
+
+        }
+
+        private void StartBtn_Click(object sender, EventArgs e)
+        {
+            if(numHours.Value + numMinutes.Value + numSeconds.Value > 0)
+            {
+                StartTimer();
+            }
+            else
+            {
+                MessageBox.Show("Dauer sollte grosser als 0 sein");
+            }
+        }
+
+        private void StartTimer()
+        {
+            int HrsInSecs = (int)numHours.Value * 3600;
+            int MinsInSecs = (int)numMinutes.Value * 60;
+            int Secs = (int)numSeconds.Value;
+
+            numTicks = HrsInSecs + MinsInSecs + Secs;
+            ticksRemaining = numTicks;
+            ticksElapsed = 0;
+            pgBarBeta.Value = 100;
+
+            numHours.Enabled = false;
+            numMinutes.Enabled = false;
+            numSeconds.Enabled = false;
+            StartBtn.Enabled = false;
+
+            Timer.Start();
+
+        }
+
+        private void RevertFromSeconds()
+        {
+            int iRemainingHours = 0;
+            decimal dRemainingHours;
+
+            int iRemainingMinutes = 0;
+            decimal dRemainingMinutes;
+
+            int iRemainingSeconds = ticksRemaining;
+
+            string sHr;
+            string sMin;
+            string sSec;
+
+            dRemainingHours = (decimal)iRemainingSeconds / (decimal)3600;
+            if(dRemainingHours > 1)
+            {
+                iRemainingHours = Convert.ToInt32(Math.Floor(dRemainingHours));
+                iRemainingSeconds = iRemainingSeconds - (iRemainingHours * 3600);
+
+                if(iRemainingHours < 10)
+                {
+                    sHr = "0" + iRemainingHours.ToString();
+
+                }
+                else
+                {
+
+                    sHr = iRemainingHours.ToString();
+                }
+            }
+            else
+            {
+                sHr = "00";
+
+            }
+
+            dRemainingMinutes = (decimal)iRemainingSeconds / (decimal)60;
+            if(dRemainingMinutes > 1)
+            {
+
+                iRemainingMinutes = Convert.ToInt32(Math.Floor(dRemainingMinutes));
+                iRemainingSeconds = iRemainingSeconds - (iRemainingMinutes * 60);
+
+                if (iRemainingMinutes < 10)
+                {
+                    sMin = "0" + iRemainingMinutes.ToString();
+
+                }
+                else
+                {
+
+                    sMin = iRemainingMinutes.ToString();
+                }
+            }
+            else
+            {
+                sMin = "00";
+
+            }
+
+            if(iRemainingSeconds < 10)
+            {
+                sSec = "0" + iRemainingSeconds.ToString();
+            }
+            else
+            {
+                sSec = iRemainingSeconds.ToString();
+            }
+            
+
+            string sTimeRemaining = "Time Remaining: " + sHr + ":" + sMin + ":" + sSec;
+
+            MethodInvoker miv = new MethodInvoker(() => remainingTm.Text = sTimeRemaining);
+            if(remainingTm.InvokeRequired)
+            {
+                remainingTm.Invoke(miv);
+
+            }
+            else
+            {
+                miv.Invoke();
+
+            }
+
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            ticksRemaining--;
+            ticksElapsed++;
+
+            if(ticksRemaining > 0)
+            {
+                    
+                RevertFromSeconds();
+
+                decimal dPercent = ((decimal)ticksRemaining / (decimal)numTicks) * 100;
+                int iPercent = Convert.ToInt32(Math.Floor(dPercent));
+                lblBar.Text = Decimal.Round(((decimal)ticksRemaining / (decimal)numTicks) * 100, 1, MidpointRounding.ToZero).ToString() + " %";
+
+                MethodInvoker miv = new MethodInvoker(() => pgBarBeta.Value = iPercent);
+                    
+                
+                
+            
+                if (pgBarBeta.InvokeRequired)
+                {
+                    pgBarBeta.Invoke(miv);
+
+
+                }
+                else
+                {
+                    miv.Invoke();
+
+                }
+            }
+            else if (ticksRemaining == 0)
+            {
+                
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"\\vmware-host\Shared Folders\Schreibtisch\C#_co\timerends.wav");
+                player.Play();
+                Timer.Stop();
+                const string msg = "Time is up!";
+                const string cap = "Timer Closing";
+                var box = MessageBox.Show(msg, cap);
+
+                numHours.Enabled = true;
+                numHours.Value = 0;
+                numMinutes.Enabled = true;
+                numMinutes.Value = 0;
+                numSeconds.Enabled = true;
+                numSeconds.Value = 0;
+                StartBtn.Enabled = true;
+
+                string sTimeRemaining = "Time Remaining: 00:00:00";
+
+            }
+            else
+            {
+                Timer.Stop();
+                
+                numHours.Enabled = true;
+                numHours.Value = 0;
+                numMinutes.Enabled = true;
+                numMinutes.Value = 0;
+                numSeconds.Enabled = true;
+                numSeconds.Value = 0;
+                StartBtn.Enabled = true;
+
+                string sTimeRemaining = "Time Remaining: 00:00:00";
+
+                
+
+                MethodInvoker miv = new MethodInvoker(() => remainingTime.Text = sTimeRemaining);
+                if(remainingTime.InvokeRequired)
+                {
+                    remainingTime.Invoke(miv);
+
+                }
+                else
+                {
+
+                    miv.Invoke();
+                }
+
+                Timer.Dispose();
+
+            }
+
+        }
+            
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            Timer.Enabled = true;
+
+            //Timer.Tick += Timer_Tick;
+        }
+
+        private void remainingTime_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void StopBtn_Click(object sender, EventArgs e)
+        {
+            numHours.Value = 0;
+            numMinutes.Value = 0;
+            numSeconds.Value = 0;
+            remainingTm.Text = "";
+            pgBarBeta.Value = 0;
+            ticksRemaining = 0;
+            lblBar.Text = "";
+        }
+        
+    }
+}
