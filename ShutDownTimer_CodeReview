@@ -48,7 +48,7 @@ namespace WinFormsApp1
             }
             else
             {
-                MessageBox.Show("Dauer sollte grosser als 0 sein");
+                MessageBox.Show("Duration should be larger then 0.");
             }
         }
 
