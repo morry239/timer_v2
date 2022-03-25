@@ -1,0 +1,77 @@
+private void StopTimer()
+        {
+            Timer.Stop();
+            numHours.Enabled = true;
+            numHours.Value = 0;
+            numMinutes.Enabled = true;
+            numMinutes.Value = 0;
+            numSeconds.Enabled = true;
+            numSeconds.Value = 0;
+            StartBtn.Enabled = true;
+
+            string sTimeRemaining = "Time Remaining: 00:00:00";
+
+            MethodInvoker miv = new MethodInvoker(() => remainingTm.Text = sTimeRemaining);
+            if (remainingTm.InvokeRequired)
+            {
+                remainingTm.Invoke(miv);
+
+            }
+            else
+            {
+
+                miv.Invoke();
+            }
+
+            Timer.Dispose();
+        }
+        
+ private void Timer_Tick(object sender, EventArgs e)
+        {
+            ticksRemaining--;
+            ticksElapsed++;
+
+            if(ticksRemaining > 0)
+            {
+                    
+                RevertFromSeconds();
+
+                decimal dPercent = ((decimal)ticksRemaining / (decimal)numTicks) * 100;
+                int iPercent = Convert.ToInt32(Math.Floor(dPercent));
+                lblBar.Text = Decimal.Round(((decimal)ticksRemaining / (decimal)numTicks) * 100, 1, MidpointRounding.ToZero).ToString() + " %";
+
+                MethodInvoker miv = new MethodInvoker(() => pgBarBeta.Value = iPercent);
+
+                if (pgBarBeta.InvokeRequired)
+                {
+                    pgBarBeta.Invoke(miv);
+
+
+                }
+                else
+                {
+                    miv.Invoke();
+
+                }
+            }
+            else if (ticksRemaining == 0)
+            {
+                
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"\\vmware-host\Shared Folders\Schreibtisch\C#_co\timerends.wav");
+                player.Play();
+                
+                const string msg = "Time is up!";
+                const string cap = "Timer Closing";
+                var box = MessageBox.Show(msg, cap);
+
+                StopTimer();
+
+            }
+            else
+            {
+
+                StopTimer();
+ 
+            }
+
+        }
