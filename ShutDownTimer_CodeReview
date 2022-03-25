@@ -252,11 +252,6 @@ namespace WinFormsApp1
             //Timer.Tick += Timer_Tick;
         }
 
-        private void remainingTime_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void StopBtn_Click(object sender, EventArgs e)
         {
             numHours.Value = 0;
