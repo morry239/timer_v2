@@ -9,8 +9,6 @@ namespace WinFormsApp1
         int numTicks = 0;
         int ticksElapsed = 0;
         int ticksRemaining = 0;
-        private const int timerEnds = 0;
-
 
         public static void Main()
         {
