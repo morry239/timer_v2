@@ -1,0 +1,58 @@
+TimeSpan ticksTotal;
+TimeSpan ticksRemaining;
+
+private void StartBtn_Click(object sender, EventArgs e)
+    {
+        bool startOk = true;
+
+        //convert user inputs into int
+        try
+        {
+            ticksRemaining = new TimeSpan(Convert.ToInt32(numHoursLeft.Value), Convert.ToInt32(numMinutesLeft.Value), Convert.ToInt32(numSecondsLeft.Value));
+            progressBarBeta.Value = 100;
+
+
+        }
+        catch (FormatException exp)
+        {
+            startOk = false;
+            MessageBox.Show(exp.Message);
+        }
+
+        //if timer is ready to start, it displays value 
+        if(startOk == true)
+        {
+            Timer.Start();
+            remainingTm.Text = ticksRemaining.ToString(@"hh\:mm\:ss");
+        }
+    }
+
+    private void Timer_Tick(object sender, EventArgs e)
+    {
+        //subtract the elapsed time by 1 second
+        ticksRemaining = ticksRemaining.Subtract(TimeSpan.FromSeconds(1));
+        ticksTotal = ticksTotal - ticksRemaining;
+        //display the remaining time after the subtraction
+        remainingTm.Text = ticksRemaining.ToString(@"hh\:mm\:ss");
+        ProgressBar();
+
+        if (ticksRemaining.TotalSeconds <= 0)
+        {
+            Timer.Stop();
+            TimerUp();
+
+        }
+
+    }
+
+    private void ProgressBar()
+    {
+        
+            if(ticksRemaining.TotalSeconds > 0)
+            {
+/* this throws: System.ArgumentOutOfRangeException Value of '-100' is not valid for 'Value'. 'Value' should be between 'minimum' and 'maximum'.*/ 
+progressBarBeta.Value = Convert.ToInt32(Math.Round((decimal)ticksRemaining.TotalSeconds / (decimal)ticksTotal.TotalSeconds) * 100);
+                lblBar.Text = (100 - progressBarBeta.Value).ToString() + " %";
+            }
+
+    }
