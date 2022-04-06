@@ -9,7 +9,7 @@ private void StartBtn_Click(object sender, EventArgs e)
         try
         {
             ticksRemaining = new TimeSpan(Convert.ToInt32(numHoursLeft.Value), Convert.ToInt32(numMinutesLeft.Value), Convert.ToInt32(numSecondsLeft.Value));
-            progressBarBeta.Value = 100;
+             pgBarBeta.Value = Convert.ToInt32(ticksTotal.TotalSeconds);
 
 
         }
@@ -31,7 +31,7 @@ private void StartBtn_Click(object sender, EventArgs e)
     {
         //subtract the elapsed time by 1 second
         ticksRemaining = ticksRemaining.Subtract(TimeSpan.FromSeconds(1));
-        ticksTotal = ticksTotal - ticksRemaining;
+        ticksTotal = ticksTotal.Add(TimeSpan.FromSeconds(1));
         //display the remaining time after the subtraction
         remainingTm.Text = ticksRemaining.ToString(@"hh\:mm\:ss");
         ProgressBar();
@@ -50,9 +50,9 @@ private void StartBtn_Click(object sender, EventArgs e)
         
             if(ticksRemaining.TotalSeconds > 0)
             {
-/* this throws: System.ArgumentOutOfRangeException Value of '-100' is not valid for 'Value'. 'Value' should be between 'minimum' and 'maximum'.*/ 
-progressBarBeta.Value = Convert.ToInt32(Math.Round((decimal)ticksRemaining.TotalSeconds / (decimal)ticksTotal.TotalSeconds) * 100);
-                lblBar.Text = (100 - progressBarBeta.Value).ToString() + " %";
+                int percent = (int)(ticksRemaining.TotalSeconds / (double)ticksTotal.TotalSeconds * 100);
+                    pgBarBeta.Value = Convert.ToInt32(ticksRemaining.TotalSeconds);
+                    lblBar.Text = (pgBarBeta.Value - percent).ToString() + " %";
             }
 
     }
