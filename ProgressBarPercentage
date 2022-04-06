@@ -9,7 +9,9 @@ private void StartBtn_Click(object sender, EventArgs e)
         try
         {
             ticksRemaining = new TimeSpan(Convert.ToInt32(numHoursLeft.Value), Convert.ToInt32(numMinutesLeft.Value), Convert.ToInt32(numSecondsLeft.Value));
-             pgBarBeta.Value = Convert.ToInt32(ticksTotal.TotalSeconds);
+            
+            //Maximum has been set to 3600 
+            pgBarBeta.Value = pgBarBeta.Maximum = Convert.ToInt32(ticksRemaining.TotalSeconds);
 
 
         }
@@ -51,8 +53,9 @@ private void StartBtn_Click(object sender, EventArgs e)
             if(ticksRemaining.TotalSeconds > 0)
             {
                 int percent = (int)(ticksRemaining.TotalSeconds / (double)ticksTotal.TotalSeconds * 100);
-                    pgBarBeta.Value = Convert.ToInt32(ticksRemaining.TotalSeconds);
-                    lblBar.Text = (pgBarBeta.Value - percent).ToString() + " %";
+                pgBarBeta.Value = Convert.ToInt32(ticksRemaining.TotalSeconds);
+                //the percentage displays random values like 11209% instead of decrementing from 100%
+                lblBar.Text = Decimal.Round((percent), 1, MidpointRounding.ToZero).ToString() + " %";
             }
 
     }
