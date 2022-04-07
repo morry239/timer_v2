@@ -1,0 +1,117 @@
+using System.Diagnostics;
+
+namespace WinFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        TimeSpan ticksRemaining;
+        TimeSpan ticksTotal;
+
+        public static void Main()
+        {
+            Application.Run(new Form1());
+        }
+
+        public Form1()
+        {
+            InitializeComponent();
+
+        }
+
+        private void PauseBtn_Click(object sender, EventArgs e)
+        {
+            if (Timer.Enabled)
+            {
+                Timer.Stop();
+                PauseBtn.Text = "Resume";
+            }
+            else
+            {
+                PauseBtn.Text = "Pause";
+                Timer.Start();
+
+            }
+
+
+        }
+
+        private void StartBtn_Click(object sender, EventArgs e)
+        {
+            bool anfangBar = true;
+
+            //convert user inputs into int
+            try
+            {
+                ticksRemaining = new TimeSpan(Convert.ToInt32(numHoursLeft.Value), Convert.ToInt32(numMinutesLeft.Value), Convert.ToInt32(numSecondsLeft.Value));
+                pgBarBeta.Value = pgBarBeta.Maximum = Convert.ToInt32(ticksRemaining.TotalSeconds);
+            }
+            catch (FormatException exp)
+            {
+                anfangBar = false;
+                MessageBox.Show(exp.Message);
+            }
+
+            //if timer is ready to start, it displays value 
+            if(anfangBar == true)
+            {
+                Timer.Start();
+                remainingTm.Text = ticksRemaining.ToString(@"hh\:mm\:ss");
+            }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            //subtract the elapsed time by 1 second
+            ticksRemaining = ticksRemaining.Subtract(TimeSpan.FromSeconds(1));
+            ticksTotal = ticksTotal.Add(TimeSpan.FromSeconds(1));
+            //display the remaining time after the subtraction
+            remainingTm.Text = ticksRemaining.ToString(@"hh\:mm\:ss");
+            ProgressBar();
+
+            if (ticksRemaining.TotalSeconds <= 0)
+            {
+                Timer.Stop();
+                TimerUp();
+
+            }
+
+        }
+
+        private void ProgressBar()
+        {
+
+            if (ticksRemaining.TotalSeconds > 0)
+            {
+
+                    pgBarBeta.Value = Convert.ToInt32(ticksRemaining.TotalSeconds);
+                    
+                    int percent = pgBarBeta.Value * 100 / pgBarBeta.Maximum;
+  
+                    lblBar.Text = percent.ToString() + " %";
+
+                }
+
+        }
+
+        //once timer is up, sound plays and a msg box pops up
+        private void TimerUp()
+        {
+            System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"\\vmware-host\Shared Folders\Schreibtisch\C#_co\timerends.wav");
+            player.Play();
+            Timer.Stop();
+            const string msg = "Time is up!";
+            const string cap = "Timer Closing";
+            var box = MessageBox.Show(msg, cap);
+           
+        }
+
+        private void StopBtn_Click(object sender, EventArgs e)
+        {
+            Timer.Stop();
+            remainingTm.Text = "00:00:00";
+            pgBarBeta.Value = 0;
+            lblBar.Text = "";
+        }
+
+    }
+}
