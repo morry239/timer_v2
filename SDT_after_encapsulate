@@ -54,24 +54,27 @@ private void StopTimer()
 
                 }
             }
-            else if (ticksRemaining == 0)
+            else 
             {
                 
-                System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"\\vmware-host\Shared Folders\Schreibtisch\C#_co\timerends.wav");
+                if (ticksRemaining == 0)
+                {
+                  SoundMessagePlay();
+                }
+
+                StopTimer();
+
+            }
+            
+
+        }
+
+private void SoundMessagePlay()
+{
+       System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"\\vmware-host\Shared Folders\Schreibtisch\C#_co\timerends.wav");
                 player.Play();
                 
                 const string msg = "Time is up!";
                 const string cap = "Timer Closing";
                 var box = MessageBox.Show(msg, cap);
-
-                StopTimer();
-
-            }
-            else
-            {
-
-                StopTimer();
- 
-            }
-
-        }
+}
